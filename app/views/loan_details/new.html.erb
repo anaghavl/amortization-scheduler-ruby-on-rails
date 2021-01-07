@@ -1,0 +1,28 @@
+<h1>Amortization Calculator</h1>
+<%= form_with(model: @loan_detail, local: true) do |form| %>
+  <div class="loan-details">
+    <div class="field">
+      <%= form.label :interest, "Enter Annual Interest" %>
+      <%= form.number_field :interest, required: true %>
+    </div>
+
+    <div class="field">
+      <%= form.label :term, "Enter Term" %>
+      <%= form.number_field :term, required: true%>
+    </div>
+
+    <div class="field">
+      <%= form.label :loan_amount, "Enter Loan Amount" %>
+      <%= form.number_field :loan_amount, required: true %>
+    </div>
+
+    <div class="field">
+      <%= form.label :request_date, "Enter Requested Date" %>
+      <%= form.date_select :request_date, required: true %>
+    </div><br>
+
+    <div class="actions">
+      <%= form.submit "Calculate Amortization schedule"%>
+    </div>
+  </div>
+<% end %>

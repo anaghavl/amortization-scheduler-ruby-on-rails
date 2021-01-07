@@ -1,0 +1,25 @@
+<div class="loan-details">
+  <h1>Amortization Schedule</h1>
+  <table>
+    <tr>
+      <th>Date</th>
+      <th>Start Balance</th>
+      <th>Principal</th>
+      <th>Interest</th>
+      <th>Total Payment</th>
+      <th>End Balance</th>
+    </tr>
+    <tbody>
+      <% @amortization_schedule.each do |entry| %>
+        <tr>
+          <td><%= entry[:date].strftime("%d %b %Y") %></td>
+          <td><%= entry[:start_balance].round(2) %></td>
+          <td><%= entry[:principal].round(2) %></td>
+          <td><%= entry[:interest].round(2) %></td>
+          <td><%= entry[:monthly_payment].round(2) %></td>
+          <td><%= entry[:end_balance].round(2) %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

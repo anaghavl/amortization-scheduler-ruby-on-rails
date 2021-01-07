@@ -1,0 +1,25 @@
+// Place all the styles related to the LoanDetails controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: https://sass-lang.com/
+h1 {
+  text-align: center;
+}
+
+.loan-details {
+  padding: 10px;
+  text-align: center;
+}
+
+table, th, td {
+	border: 1px solid grey;
+	border-collapse: collapse;
+	text-align: center;
+	margin-left: auto;
+	margin-right: auto;
+	vertical-align: middle;
+}
+
+th, td {
+  height: 30px; 
+  padding: 10px;
+}
