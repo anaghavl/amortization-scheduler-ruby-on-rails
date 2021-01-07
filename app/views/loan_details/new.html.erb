@@ -3,17 +3,22 @@
   <div class="loan-details">
     <div class="field">
       <%= form.label :interest, "Enter Annual Interest" %>
-      <%= form.number_field :interest, required: true %>
+      <%= form.number_field :interest, min: 1, step:'any', required: true %>
+    </div>
+
+    <div class="field">
+      <%= form.label :type_of_loan, "Enter Type of Loan" %>
+      <%= form.select :type_of_loan, @loan_detail.type_of_loan_select ,min: 1, required: true%>
     </div>
 
     <div class="field">
       <%= form.label :term, "Enter Term" %>
-      <%= form.number_field :term, required: true%>
+      <%= form.number_field :term, min: 1, required: true%>
     </div>
 
     <div class="field">
       <%= form.label :loan_amount, "Enter Loan Amount" %>
-      <%= form.number_field :loan_amount, required: true %>
+      <%= form.number_field :loan_amount, min: 0, step:'any', required: true %>
     </div>
 
     <div class="field">
