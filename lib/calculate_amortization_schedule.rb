@@ -7,15 +7,14 @@ class CalculateAmortizationSchedule
     @monthly_payment = calculate_monthly_payment(@loan_detail.loan_amount, @loan_detail.term)
     @principal_amount = @monthly_payment - @interest
     @term = @loan_detail.term
-    @request_date = @loan_detail.request_date
     @start_balance = @loan_detail.loan_amount
     @end_balance = @start_balance - @principal_amount
-    @type_of_loan = @loan_detail.type_of_loan
+    @amortization_schedule = []
   end
 
   # Check the type of loan and call appropriate function
   def call
-    if(@type_of_loan == "Regular loan")
+    if(@loan_detail.type_of_loan == "Regular loan")
       amortization_schedule_regular_loan
     else
       amortization_schedule_interest_only_duration
@@ -29,74 +28,59 @@ class CalculateAmortizationSchedule
 
   private
 
-  # Calculate the schedule for the first 3 months
+  # Calculate the schedule for interest only duration
   def amortization_schedule_interest_only_duration
-    @amortization_schedule = []
+    build_initial_amortization_schedule_interest_only_duration
+    build_pending_amortization_schedule
+    @amortization_schedule
+  end
+
+  # Calculate the schedule for regular loan
+  def amortization_schedule_regular_loan
+    date = next_date(@loan_detail.request_date)
+    build_amortization_schedule(date, @start_balance, @end_balance, @interest, @principal_amount, @monthly_payment)
+    build_pending_amortization_schedule
+    @amortization_schedule
+  end
+
+  #add rows to amortization_schedule
+  def build_amortization_schedule(date, start_balance, end_balance, interest, principal, monthly_payment) 
+    @amortization_schedule.push(date: date,
+      start_balance: start_balance,
+      end_balance: end_balance,
+      interest: interest,
+      principal: principal,
+      monthly_payment: monthly_payment)
+  end
+
+  # Calculate the schedule for interest only duration first 3 months
+  def build_initial_amortization_schedule_interest_only_duration
     3.times do
       if @amortization_schedule.blank?
-        date = next_date(@request_date)
+        date = next_date(@loan_detail.request_date)
       else
         date = next_date(@amortization_schedule.last[:date])
       end
-      @amortization_schedule.push(date: date,
-        start_balance: @start_balance,
-        end_balance: @start_balance,
-        interest: @interest,
-        principal: 0,
-        monthly_payment: @interest)
-    end
-    amortization_schedule_interest_only_duration_pending_term
-    @amortization_schedule
-  end
-
-  # Calculate the schedule for the first month
-  def amortization_schedule_regular_loan
-    @amortization_schedule = []
-
-    date = next_date(@request_date)
-    @amortization_schedule.push(date: date,
-      start_balance: @start_balance,
-      end_balance: @end_balance,
-      interest: @interest,
-      principal: @principal_amount,
-      monthly_payment: @monthly_payment)
-
-      amortization_schedule_regular_loan_pending_term
-    @amortization_schedule
-  end
-
-  # Calculate the schedule for the rest of the term
-  def amortization_schedule_interest_only_duration_pending_term
-    monthly_payment = calculate_monthly_payment(@amortization_schedule.last[:end_balance], @term - 3)
-    (@term - 3).times do
-      start_balance = @amortization_schedule.last[:end_balance]
-      interest = start_balance * @annual_interest
-      principal = monthly_payment - interest
-      end_balance = start_balance - principal
-      date = next_date(@amortization_schedule.last[:date])
-      @amortization_schedule.push(date: date,
-                                  start_balance: start_balance,
-                                  end_balance: end_balance,
-                                  interest: interest, 
-                                  principal: principal,
-                                  monthly_payment: monthly_payment)
+      build_amortization_schedule(date, @start_balance, @start_balance, @interest, 0, @interest)
     end
   end
 
   # Calculate the schedule for the rest of the term
-  def amortization_schedule_regular_loan_pending_term
-    (@term - 1).times do
+  def build_pending_amortization_schedule
+    if(@loan_detail.type_of_loan == "Regular loan")
+      term_left = @term - 1
+    else
+      term_left = @term - 3
+      @monthly_payment = calculate_monthly_payment(@amortization_schedule.last[:end_balance], @term - 3)
+    end
+
+    term_left.times do
       start_balance = @amortization_schedule.last[:end_balance]
       interest = start_balance * @annual_interest
       principal = @monthly_payment - interest
       end_balance = start_balance - principal
       date = next_date(@amortization_schedule.last[:date])
-      @amortization_schedule.push(date: date,
-                                  start_balance: start_balance,
-                                  end_balance: end_balance,
-                                  interest: interest, 
-                                  principal: principal,
-                                  monthly_payment: @monthly_payment)
+      build_amortization_schedule(date, start_balance, end_balance, interest, principal, @monthly_payment)
     end
   end
 
