@@ -1,4 +1,4 @@
-require './lib/calculate_amortization_schedule.rb'
+require 'calculate_amortization_schedule'
 
 class LoanDetail < ApplicationRecord
 
